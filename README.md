@@ -1,8 +1,8 @@
-# ⌨️ TypeFlow - Free Typing Speed Test
+# ⌨️ Typerflow - Free Typing Speed Test
 
 A modern, responsive typing test website built with React, TypeScript, and Tailwind CSS. Test your typing speed and accuracy with two modes: Screen Mode and Paper Mode.
 
-![TypeFlow](https://img.shields.io/badge/TypeFlow-Typing%20Test-indigo?style=for-the-badge)
+![Typerflow](https://img.shields.io/badge/Typerflow-Typing%20Test-indigo?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)
 ![Tailwind](https://img.shields.io/badge/Tailwind-4-cyan?style=for-the-badge&logo=tailwindcss)
@@ -58,7 +58,7 @@ This project is configured for automatic deployment to GitHub Pages using GitHub
    ```bash
    git init
    git add .
-   git commit -m "Initial commit - TypeFlow typing test"
+   git commit -m "Initial commit - Typerflow typing test"
    git branch -M main
    git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
    git push -u origin main

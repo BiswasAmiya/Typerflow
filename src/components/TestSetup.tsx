@@ -27,7 +27,7 @@ export default function TestSetup({ userName, userEmail, onStart, onLogout, onVi
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-white">TypeFlow</h1>
+            <h1 className="text-2xl font-bold text-white">Typerflow</h1>
           </div>
           <div className="flex items-center gap-4">
             <button

@@ -56,7 +56,7 @@ export default function WelcomeScreen({ onSubmit }: WelcomeScreenProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">TypeFlow</h1>
+          <h1 className="text-4xl font-bold text-white mb-2">Typerflow</h1>
           <p className="text-gray-400 text-lg">Test your typing speed & accuracy</p>
           <p className="text-gray-500 text-sm mt-1">Free to use • No sign-up required</p>
         </div>

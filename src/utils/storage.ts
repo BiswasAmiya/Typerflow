@@ -1,8 +1,8 @@
 // Local storage management for test results
 import { TestResult } from './calculations';
 
-const STORAGE_KEY = 'typeflow_results';
-const USER_KEY = 'typeflow_user';
+const STORAGE_KEY = 'typerflow_results';
+const USER_KEY = 'typerflow_user';
 
 export interface UserData {
   name: string;

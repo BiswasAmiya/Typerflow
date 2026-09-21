@@ -218,7 +218,7 @@ export default function TypingTest({ userName, userEmail, mode, duration, onComp
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <span className="text-white font-semibold">TypeFlow</span>
+            <span className="text-white font-semibold">Typerflow</span>
             <span className="text-gray-500 text-sm">|</span>
             <span className="text-gray-400 text-sm">{mode === 'screen' ? '🖥️ Screen' : '📄 Paper'} Mode</span>
             <span className="text-gray-500 text-sm">|</span>
