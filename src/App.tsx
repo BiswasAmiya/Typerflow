@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ThemeProvider } from './context/ThemeContext';
 import WelcomeScreen from './components/WelcomeScreen';
 import TestSetup from './components/TestSetup';
 import TypingTest from './components/TypingTest';
@@ -18,7 +19,7 @@ interface AppState {
   lastResult: TestResult | null;
 }
 
-export default function App() {
+function AppContent() {
   const [state, setState] = useState<AppState>({
     screen: 'welcome',
     user: null,
@@ -126,4 +127,12 @@ export default function App() {
     default:
       return <WelcomeScreen onSubmit={handleWelcomeSubmit} />;
   }
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
 }

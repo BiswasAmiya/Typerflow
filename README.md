@@ -1,8 +1,8 @@
-# ⌨️ Typerflow - Free Typing Speed Test
+# ⌨️ TypeSmooth - Free Typing Speed Test
 
-A modern, responsive typing test website built with React, TypeScript, and Tailwind CSS. Test your typing speed and accuracy with two modes: Screen Mode and Paper Mode.
+A modern, responsive typing test website built with React, TypeScript, and Tailwind CSS. Test your typing speed and accuracy with two modes: Screen Mode and Paper Mode. Features a beautiful Electric & Lemonade color scheme with day/night mode toggle.
 
-![Typerflow](https://img.shields.io/badge/Typerflow-Typing%20Test-indigo?style=for-the-badge)
+![TypeSmooth](https://img.shields.io/badge/TypeSmooth-Typing%20Test-03045E?style=for-the-badge&labelColor=B8FB3C)
 ![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)
 ![Tailwind](https://img.shields.io/badge/Tailwind-4-cyan?style=for-the-badge&logo=tailwindcss)
@@ -15,9 +15,19 @@ A modern, responsive typing test website built with React, TypeScript, and Tailw
 - **📊 Real-time Stats** - Live WPM, accuracy, and error tracking
 - **🏆 Performance Ratings** - Beginner to Expert classification
 - **📈 History Tracking** - View all past test results
+- **🌓 Day/Night Mode** - Toggle between light and dark themes
+- **🎨 Electric & Lemonade Theme** - Beautiful color scheme (#03045E & #B8FB3C)
 - **🔒 Privacy First** - All data stored locally, no server needed
 - **📱 Responsive Design** - Works on desktop, tablet, and mobile
 - **🛡️ Security** - Input validation, XSS prevention, rate limiting
+
+## 🎨 Color Scheme
+
+TypeSmooth uses a distinctive Electric & Lemonade color palette:
+
+- **Electric** `#03045E` - Deep navy blue (primary dark mode color)
+- **Lemonade** `#B8FB3C` - Bright yellow-green (accent/highlight color)
+- **Complementary Colors** - Coral, Lavender, and Sky for various UI elements
 
 ## 🚀 Getting Started
 
@@ -30,8 +40,8 @@ A modern, responsive typing test website built with React, TypeScript, and Tailw
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/typeflow.git
-cd typeflow
+git clone https://github.com/YOUR_USERNAME/typesmooth.git
+cd typesmooth
 
 # Install dependencies
 npm install
@@ -48,51 +58,31 @@ npm run build
 
 The built files will be in the `dist/` directory.
 
-## 🌐 Deploy to GitHub Pages
+## 🌐 Deploy to Vercel (Recommended)
 
-This project is configured for automatic deployment to GitHub Pages using GitHub Actions.
+This project is configured for easy deployment on Vercel.
 
-### Setup Steps:
+### Quick Deploy:
 
-1. **Create a new GitHub repository**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit - Typerflow typing test"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
-   git push -u origin main
-   ```
+1. **Push your code to GitHub**
+2. **Go to [vercel.com/new](https://vercel.com/new)**
+3. **Import your repository**
+4. **Click Deploy** - Vercel auto-detects everything!
 
-2. **Enable GitHub Pages in your repository:**
-   - Go to your repo → **Settings** → **Pages**
-   - Under "Build and deployment" → **Source**, select **GitHub Actions**
+Your site will be live at: `https://typesmooth.vercel.app`
 
-3. **Push to main branch** - The workflow will automatically build and deploy!
+### Alternative: GitHub Pages
 
-4. **Your site will be live at:**
-   - `https://YOUR_USERNAME.github.io/YOUR_REPO/`
+Also configured for GitHub Pages deployment via GitHub Actions:
 
-### Manual Deployment (Alternative)
-
-If you prefer to deploy manually using the `gh-pages` package:
-
-```bash
-# Install gh-pages
-npm install -D gh-pages
-
-# Add to package.json scripts:
-# "deploy": "gh-pages -d dist"
-
-# Build and deploy
-npm run build
-npm run deploy
-```
+1. Go to your repo → **Settings** → **Pages**
+2. Under "Build and deployment" → **Source**, select **GitHub Actions**
+3. Push to main branch - auto-deploys!
 
 ## 🏗️ Project Structure
 
 ```
-typeflow/
+typesmooth/
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml          # GitHub Actions deployment workflow
@@ -100,23 +90,39 @@ typeflow/
 │   └── 404.html                # SPA redirect for GitHub Pages
 ├── src/
 │   ├── components/
-│   │   ├── WelcomeScreen.tsx   # User registration form
-│   │   ├── TestSetup.tsx       # Mode & duration selection
-│   │   ├── TypingTest.tsx      # Core typing test engine
+│   │   ├── History.tsx         # Past results history
 │   │   ├── Results.tsx         # Test results display
-│   │   └── History.tsx         # Past results history
+│   │   ├── TestSetup.tsx       # Mode & duration selection
+│   │   ├── ThemeToggle.tsx     # Day/Night mode toggle
+│   │   ├── TypeSmoothIcon.tsx  # Custom SVG icon
+│   │   ├── TypingTest.tsx      # Core typing test engine
+│   │   └── WelcomeScreen.tsx   # User registration form
+│   ├── context/
+│   │   └── ThemeContext.tsx    # Theme provider & hook
 │   ├── utils/
-│   │   ├── textPassages.ts     # Typing test content
 │   │   ├── calculations.ts     # WPM/accuracy calculations
-│   │   ├── validation.ts       # Input validation & security
-│   │   └── storage.ts          # LocalStorage management
+│   │   ├── colors.ts           # Color palette constants
+│   │   ├── storage.ts          # LocalStorage management
+│   │   ├── textPassages.ts     # Typing test content
+│   │   └── validation.ts       # Input validation & security
 │   ├── App.tsx                 # Main app component
 │   ├── main.tsx                # Entry point
 │   └── index.css               # Global styles
-├── index.html                  # HTML template with SPA redirect
+├── index.html                  # HTML template
+├── vercel.json                 # Vercel configuration
+├── netlify.toml                # Netlify configuration (backup)
 ├── vite.config.js              # Vite configuration
 └── package.json
 ```
+
+## 🌓 Theme System
+
+TypeSmooth features a comprehensive day/night mode system:
+
+- **Dark Mode** (default) - Electric blue background with Lemonade accents
+- **Light Mode** - Clean white background with Electric blue text
+- **Persistent** - Theme preference saved in localStorage
+- **Smooth Transitions** - Animated color changes throughout the UI
 
 ## 🔒 Security Features
 
@@ -149,6 +155,7 @@ typeflow/
 - **Tailwind CSS 4** - Utility-first styling
 - **LocalStorage** - Client-side data persistence
 - **GitHub Actions** - CI/CD deployment
+- **Vercel** - Hosting platform
 
 ## 📝 License
 
