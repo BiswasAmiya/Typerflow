@@ -102,7 +102,9 @@ export default function Results({ result, onRetake, onHome, onViewHistory }: Res
             </div>
             <div className="p-4 rounded-xl" style={{ backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary }}>
               <p className="text-xs mb-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Mode</p>
-              <p className="text-xl font-bold capitalize" style={{ color: isDark ? colors.dark.text : colors.light.text }}>{result.mode}</p>
+              <p className="text-xl font-bold capitalize" style={{ color: isDark ? colors.dark.text : colors.light.text }}>
+                {result.mode}{result.pdfUsed ? ' (PDF)' : ''}
+              </p>
             </div>
             <div className="p-4 rounded-xl" style={{ backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary }}>
               <p className="text-xs mb-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Duration</p>

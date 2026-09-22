@@ -167,7 +167,7 @@ export default function History({ userEmail, onBack }: HistoryProps) {
                           : colors.lavender
                       }}
                     >
-                      {result.mode === 'screen' ? '🖥️' : '📄'} {result.mode}
+                      {result.mode === 'screen' ? '🖥️' : '📄'} {result.mode}{result.pdfUsed ? ' 📎' : ''}
                     </span>
                   </div>
                   <div>

@@ -4,11 +4,12 @@ import { useTheme } from '../context/ThemeContext';
 import { colors } from '../utils/colors';
 import TypeSmoothIcon from './TypeSmoothIcon';
 import ThemeToggle from './ThemeToggle';
+import PDFUpload from './PDFUpload';
 
 interface TestSetupProps {
   userName: string;
   userEmail: string;
-  onStart: (mode: 'screen' | 'paper', duration: number) => void;
+  onStart: (mode: 'screen' | 'paper', duration: number, pdfText?: string) => void;
   onLogout: () => void;
   onViewHistory: () => void;
 }
@@ -19,6 +20,8 @@ export default function TestSetup({ userName, userEmail, onStart, onLogout, onVi
   
   const [mode, setMode] = useState<'screen' | 'paper'>('screen');
   const [duration, setDuration] = useState<number>(10);
+  const [pdfText, setPdfText] = useState<string>('');
+  const [pdfError, setPdfError] = useState<string>('');
 
   const avgStats = getAverageStats(userEmail);
   const bestWpm = getBestWPM(userEmail);
@@ -188,7 +191,7 @@ export default function TestSetup({ userName, userEmail, onStart, onLogout, onVi
                 className="text-sm transition-colors duration-300"
                 style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}
               >
-                Text is NOT shown on screen. Type from a printed paper or memorized text. Tests real typing skill.
+                Upload a PDF with your test text, then type from the printed paper. Text is hidden on screen — tests real typing skill with accurate results.
               </p>
               {mode === 'paper' && (
                 <div className="mt-3 text-sm font-medium" style={{ color: colors.lavender }}>✓ Selected</div>
@@ -245,11 +248,60 @@ export default function TestSetup({ userName, userEmail, onStart, onLogout, onVi
           </div>
         </div>
 
+        {/* PDF Upload Section - Only for Paper Mode */}
+        {mode === 'paper' && (
+          <div 
+            className="rounded-2xl p-8 mb-8 transition-all duration-300"
+            style={{
+              backgroundColor: isDark ? colors.dark.card : colors.light.card,
+              border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`
+            }}
+          >
+            <h3 
+              className="text-lg font-semibold mb-4 transition-colors duration-300"
+              style={{ color: isDark ? colors.dark.text : colors.light.text }}
+            >
+              📄 Upload Your Typing Test PDF
+            </h3>
+            <p 
+              className="text-sm mb-6 transition-colors duration-300"
+              style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}
+            >
+              Upload a PDF containing the text you want to type. We'll extract the text and use it for your test.
+            </p>
+            
+            <PDFUpload 
+              onTextExtracted={(text) => {
+                setPdfText(text);
+                setPdfError('');
+              }}
+              onError={(error) => {
+                setPdfError(error);
+                setPdfText('');
+              }}
+            />
+            
+            {pdfError && (
+              <div 
+                className="mt-4 p-3 rounded-lg text-sm"
+                style={{ 
+                  backgroundColor: `${colors.coral}15`,
+                  color: colors.coral,
+                  border: `1px solid ${colors.coral}30`
+                }}
+              >
+                ⚠️ {pdfError}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Start Button */}
         <div className="text-center">
           <button
-            onClick={() => onStart(mode, duration)}
-            className="px-12 py-4 rounded-xl font-bold text-xl transition-all transform hover:scale-105 active:scale-95"
+            onClick={() => onStart(mode, duration, pdfText || undefined)}
+            disabled={mode === 'paper' && !pdfText}
+            className="px-12 py-4 rounded-xl font-bold text-xl transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             style={{
               background: isDark 
                 ? `linear-gradient(135deg, ${colors.lemonade}, ${colors.lemonadeDark})`
@@ -260,8 +312,13 @@ export default function TestSetup({ userName, userEmail, onStart, onLogout, onVi
                 : `0 12px 40px ${colors.electric}30`
             }}
           >
-            🚀 Start Test ({duration} min - {mode} mode)
+            {mode === 'paper' && !pdfText ? '📄 Upload PDF to Start' : '🚀 Start Test'} ({duration} min - {mode} mode)
           </button>
+          {mode === 'paper' && !pdfText && (
+            <p className="text-sm mt-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+              Please upload your typing test PDF to begin
+            </p>
+          )}
         </div>
 
         {/* Instructions */}
@@ -288,7 +345,7 @@ export default function TestSetup({ userName, userEmail, onStart, onLogout, onVi
             </li>
             <li className="flex items-start gap-2">
               <span style={{ color: colors.lavender }} className="mt-0.5">•</span>
-              <span><strong>Paper Mode:</strong> Print or write the given text on paper before starting. The screen will be blank — type from your paper reference.</span>
+              <span><strong>Paper Mode:</strong> Upload a PDF containing your typing test text, or use the default text. Print it on paper before starting. The screen will be blank — type from your paper reference. Results are calculated based on the PDF content.</span>
             </li>
             <li className="flex items-start gap-2">
               <span style={{ color: colors.lemonadeDark }} className="mt-0.5">•</span>

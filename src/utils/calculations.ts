@@ -17,6 +17,7 @@ export interface TestResult {
   email: string;
   mode: 'screen' | 'paper';
   duration: number; // in minutes
+  pdfUsed?: boolean; // Whether a PDF was uploaded for paper mode
   stats: TypingStats;
   date: string;
   textTyped: string;
