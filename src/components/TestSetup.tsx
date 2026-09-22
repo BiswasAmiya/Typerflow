@@ -261,13 +261,13 @@ export default function TestSetup({ userName, userEmail, onStart, onLogout, onVi
               className="text-lg font-semibold mb-4 transition-colors duration-300"
               style={{ color: isDark ? colors.dark.text : colors.light.text }}
             >
-              📄 Upload Your Typing Test PDF
+              📄 Upload Your Typing Test PDF (Optional)
             </h3>
             <p 
               className="text-sm mb-6 transition-colors duration-300"
               style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}
             >
-              Upload a PDF containing the text you want to type. We'll extract the text and use it for your test.
+              Upload a PDF containing the text you want to type, or skip this to use default passages. We'll extract the text and use it for your test.
             </p>
             
             <PDFUpload 
@@ -300,8 +300,7 @@ export default function TestSetup({ userName, userEmail, onStart, onLogout, onVi
         <div className="text-center">
           <button
             onClick={() => onStart(mode, duration, pdfText || undefined)}
-            disabled={mode === 'paper' && !pdfText}
-            className="px-12 py-4 rounded-xl font-bold text-xl transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="px-12 py-4 rounded-xl font-bold text-xl transition-all transform hover:scale-105 active:scale-95"
             style={{
               background: isDark 
                 ? `linear-gradient(135deg, ${colors.lemonade}, ${colors.lemonadeDark})`
@@ -312,11 +311,11 @@ export default function TestSetup({ userName, userEmail, onStart, onLogout, onVi
                 : `0 12px 40px ${colors.electric}30`
             }}
           >
-            {mode === 'paper' && !pdfText ? '📄 Upload PDF to Start' : '🚀 Start Test'} ({duration} min - {mode} mode)
+            🚀 Start Test ({duration} min - {mode} mode{mode === 'paper' && pdfText ? ' - PDF' : ''})
           </button>
           {mode === 'paper' && !pdfText && (
             <p className="text-sm mt-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
-              Please upload your typing test PDF to begin
+              💡 Tip: Upload a PDF for custom text, or start with default passages
             </p>
           )}
         </div>
