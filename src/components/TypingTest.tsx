@@ -13,11 +13,12 @@ interface TypingTestProps {
   userEmail: string;
   mode: 'screen' | 'paper';
   duration: number;
+  pdfText?: string;
   onComplete: (result: TestResult) => void;
   onQuit: () => void;
 }
 
-export default function TypingTest({ userName, userEmail, mode, duration, onComplete, onQuit }: TypingTestProps) {
+export default function TypingTest({ userName, userEmail, mode, duration, pdfText, onComplete, onQuit }: TypingTestProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   
@@ -49,11 +50,11 @@ export default function TypingTest({ userName, userEmail, mode, duration, onComp
   useEffect(() => { isFinishedRef.current = isFinished; }, [isFinished]);
 
   useEffect(() => {
-    const passageCount = duration <= 10 ? 4 : duration <= 15 ? 6 : 8;
-    const generatedText = getMultiplePassages(passageCount);
-    setText(generatedText);
-    setPaperText(generatedText);
-  }, [duration]);
+    // Use PDF text if provided, otherwise generate random passages
+    const testText = pdfText || getMultiplePassages(duration <= 10 ? 4 : duration <= 15 ? 6 : 8);
+    setText(testText);
+    setPaperText(testText);
+  }, [duration, pdfText]);
 
   useEffect(() => {
     if (isStarted && !isFinished && timeLeft > 0) {
@@ -96,6 +97,7 @@ export default function TypingTest({ userName, userEmail, mode, duration, onComp
       email: userEmail,
       mode,
       duration: durationRef.current,
+      pdfUsed: mode === 'paper' && !!pdfText,
       stats: {
         wpm, accuracy,
         correctChars: actualCorrect,
@@ -202,7 +204,7 @@ export default function TypingTest({ userName, userEmail, mode, duration, onComp
             </span>
             <span style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }} className="text-sm">|</span>
             <span className="text-sm" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
-              {mode === 'screen' ? '🖥️ Screen' : '📄 Paper'} Mode
+              {mode === 'screen' ? '🖥️ Screen' : (pdfText ? '📄 Paper (PDF)' : '📄 Paper')} Mode
             </span>
             <span style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }} className="text-sm">|</span>
             <span className="text-sm" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>{duration} min</span>
@@ -301,41 +303,64 @@ export default function TypingTest({ userName, userEmail, mode, duration, onComp
               <>
                 <h3 className="text-sm font-medium mb-3 flex items-center gap-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
                   <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: colors.lavender }}></span>
-                  📄 Paper Mode - Reference Text
+                  📄 Paper Mode {pdfText ? '- PDF Reference Text' : '- Reference Text'}
                 </h3>
                 <div className="h-80 flex flex-col items-center justify-center text-center">
-                  <div className="text-6xl mb-4">📝</div>
-                  <p className="text-lg font-medium mb-2" style={{ color: isDark ? colors.dark.text : colors.light.text }}>Type from your paper</p>
-                  <p className="text-sm mb-6 max-w-xs" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
-                    The text is NOT shown on screen during typing. Type from the printed/written paper you prepared.
+                  <div className="text-6xl mb-4">{pdfText ? '📄' : '📝'}</div>
+                  <p className="text-lg font-medium mb-2" style={{ color: isDark ? colors.dark.text : colors.light.text }}>
+                    {pdfText ? 'Type from your PDF paper' : 'Type from your paper'}
                   </p>
-                  <div 
-                    className="rounded-lg p-4 max-w-sm w-full"
-                    style={{
-                      backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary,
-                      border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`
-                    }}
-                  >
-                    <p className="text-xs mb-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Need the text? Copy it before starting:</p>
-                    <textarea
-                      readOnly
-                      value={paperText}
-                      className="w-full h-24 text-xs bg-transparent border-none resize-none focus:outline-none"
-                      style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}
-                      onClick={(e) => (e.target as HTMLTextAreaElement).select()}
-                    />
-                    <button
-                      onClick={handleCopyText}
-                      className="mt-2 px-3 py-1.5 text-xs rounded transition-all"
+                  <p className="text-sm mb-6 max-w-xs" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+                    {pdfText 
+                      ? 'The text from your PDF is NOT shown on screen during typing. Type from the printed PDF you prepared.'
+                      : 'The text is NOT shown on screen during typing. Type from the printed/written paper you prepared.'
+                    }
+                  </p>
+                  {!pdfText && (
+                    <div 
+                      className="rounded-lg p-4 max-w-sm w-full"
                       style={{
-                        backgroundColor: copied ? `${colors.lemonadeDark}20` : (isDark ? colors.dark.bgSecondary : colors.light.bgTertiary),
-                        color: copied ? colors.lemonadeDark : (isDark ? colors.dark.text : colors.light.text),
-                        border: `1px solid ${copied ? `${colors.lemonadeDark}30` : (isDark ? colors.dark.border : colors.light.border)}`
+                        backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary,
+                        border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`
                       }}
                     >
-                      {copied ? '✓ Copied!' : '📋 Copy to clipboard'}
-                    </button>
-                  </div>
+                      <p className="text-xs mb-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Need the text? Copy it before starting:</p>
+                      <textarea
+                        readOnly
+                        value={paperText}
+                        className="w-full h-24 text-xs bg-transparent border-none resize-none focus:outline-none"
+                        style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}
+                        onClick={(e) => (e.target as HTMLTextAreaElement).select()}
+                      />
+                      <button
+                        onClick={handleCopyText}
+                        className="mt-2 px-3 py-1.5 text-xs rounded transition-all"
+                        style={{
+                          backgroundColor: copied ? `${colors.lemonadeDark}20` : (isDark ? colors.dark.bgSecondary : colors.light.bgTertiary),
+                          color: copied ? colors.lemonadeDark : (isDark ? colors.dark.text : colors.light.text),
+                          border: `1px solid ${copied ? `${colors.lemonadeDark}30` : (isDark ? colors.dark.border : colors.light.border)}`
+                        }}
+                      >
+                        {copied ? '✓ Copied!' : '📋 Copy to clipboard'}
+                      </button>
+                    </div>
+                  )}
+                  {pdfText && (
+                    <div 
+                      className="rounded-lg p-4 max-w-sm w-full"
+                      style={{
+                        backgroundColor: isDark ? `${colors.lavender}10` : `${colors.lavender}10`,
+                        border: `1px solid ${colors.lavender}30`
+                      }}
+                    >
+                      <p className="text-xs" style={{ color: colors.lavender }}>
+                        ✓ Text loaded from your uploaded PDF
+                      </p>
+                      <p className="text-xs mt-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+                        Print the PDF and type from it during the test
+                      </p>
+                    </div>
+                  )}
                 </div>
               </>
             )}

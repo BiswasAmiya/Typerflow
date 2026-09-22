@@ -16,6 +16,7 @@ interface AppState {
   user: UserData | null;
   testMode: 'screen' | 'paper';
   testDuration: number;
+  pdfText: string;
   lastResult: TestResult | null;
 }
 
@@ -25,6 +26,7 @@ function AppContent() {
     user: null,
     testMode: 'screen',
     testDuration: 10,
+    pdfText: '',
     lastResult: null,
   });
 
@@ -43,8 +45,8 @@ function AppContent() {
     setState(prev => ({ ...prev, user: userData, screen: 'setup' }));
   };
 
-  const handleStartTest = (mode: 'screen' | 'paper', duration: number) => {
-    setState(prev => ({ ...prev, testMode: mode, testDuration: duration, screen: 'test' }));
+  const handleStartTest = (mode: 'screen' | 'paper', duration: number, pdfText?: string) => {
+    setState(prev => ({ ...prev, testMode: mode, testDuration: duration, pdfText: pdfText || '', screen: 'test' }));
   };
 
   const handleTestComplete = (result: TestResult) => {
@@ -70,6 +72,7 @@ function AppContent() {
       user: null,
       testMode: 'screen',
       testDuration: 10,
+      pdfText: '',
       lastResult: null,
     });
   };
@@ -101,6 +104,7 @@ function AppContent() {
           userEmail={state.user.email}
           mode={state.testMode}
           duration={state.testDuration}
+          pdfText={state.pdfText}
           onComplete={handleTestComplete}
           onQuit={handleQuitTest}
         />
