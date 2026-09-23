@@ -1,26 +1,60 @@
-// TypeSmooth Color Palette
-// Based on Electric (#03045E) and Lemonade (#B8FB3C)
+// TypeSmooth Color Palette - Based on typing.com design
+// Clean, friendly, educational design
 
 export const colors = {
   // Primary colors
-  electric: '#03045E',        // Deep navy blue
-  lemonade: '#B8FB3C',        // Bright yellow-green
+  electric: '#03045E',        // Kept for theme toggle compatibility
+  lemonade: '#B8FB3C',        // Kept for theme toggle compatibility
   
-  // Electric shades (for dark mode backgrounds & primary elements)
-  electricLight: '#0A0B2E',   // Lighter navy for backgrounds
-  electricMedium: '#023E8A',  // Medium blue for secondary elements
-  electricBright: '#0077B6',  // Bright blue for accents
+  // New typing.com-inspired colors
+  primary: {
+    yellow: '#FFCF46',        // rgb(255, 207, 70) - Primary brand color
+    blue: '#3295DB',          // rgb(50, 149, 219) - Secondary brand color
+    lightBlue: '#6FB2E6',     // rgb(111, 178, 230) - Accent blue
+  },
   
-  // Lemonade shades (for highlights & accents)
-  lemonadeLight: '#D4FF6B',   // Lighter lemonade
-  lemonadeDark: '#8BC420',    // Darker lemonade for contrast
+  // Text colors
+  text: {
+    dark: '#4A4A4A',          // rgb(74, 74, 74) - Primary text
+    brown: '#6D5825',         // rgb(109, 88, 37) - Button text on yellow
+    white: '#FFFFFF',         // rgb(255, 255, 255)
+    blue: '#2877AF',          // rgb(40, 119, 175) - Links/accents
+    light: '#A9A9A9',         // rgb(169, 169, 169) - Muted text
+  },
   
-  // Complementary colors (from color wheel)
-  coral: '#FF6B6B',           // Red-orange for errors/warnings
-  lavender: '#9D4EDD',        // Purple for special accents
-  sky: '#90E0EF',             // Light blue for info
+  // Surface colors
+  surface: {
+    white: '#FFFFFF',         // rgb(255, 255, 255)
+    yellow: '#FFCF46',        // rgb(255, 207, 70)
+    lightBlue: '#DEEEFC',     // rgb(222, 238, 252)
+    blue: '#3295DB',          // rgb(50, 149, 219)
+    lightGray: '#F7F7F7',     // rgb(247, 247, 247)
+    overlay: 'rgba(0, 0, 0, 0.15)',
+  },
   
-  // Neutrals for dark mode
+  // Border colors
+  border: {
+    light: '#BCDDF8',         // rgb(188, 221, 248)
+    medium: '#82C0F1',        // rgb(130, 192, 241)
+    gray: '#D5D5D5',          // rgb(213, 213, 213)
+  },
+  
+  // Status colors
+  status: {
+    success: '#4CAF50',       // Green for correct
+    error: '#DC2626',         // Red for errors
+    warning: '#F59E0B',       // Orange for warnings
+    info: '#3B82F6',          // Blue for info
+  },
+  
+  // Backward compatibility aliases
+  coral: '#DC2626',           // Error red
+  lemonadeDark: '#8BC420',    // Darker lemonade
+  lavender: '#9D4EDD',        // Purple accent
+  sky: '#90E0EF',             // Light blue
+  electricMedium: '#023E8A',  // Medium blue
+  
+  // Legacy compatibility (for theme toggle)
   dark: {
     bg: '#03045E',
     bgSecondary: '#0A0B2E',
@@ -32,7 +66,6 @@ export const colors = {
     textMuted: 'rgba(184, 251, 60, 0.6)',
   },
   
-  // Neutrals for light mode
   light: {
     bg: '#F8F9FA',
     bgSecondary: '#FFFFFF',
