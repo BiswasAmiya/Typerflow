@@ -104,7 +104,8 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
         rawWpm, consistency: 0
       },
       date: new Date().toISOString(),
-      textTyped: typedTextRef.current
+      textTyped: typedTextRef.current,
+      referenceText: text
     };
 
     recordSubmission();

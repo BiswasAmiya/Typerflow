@@ -21,6 +21,7 @@ export interface TestResult {
   stats: TypingStats;
   date: string;
   textTyped: string;
+  referenceText?: string; // The text that was supposed to be typed
 }
 
 // Calculate Words Per Minute
