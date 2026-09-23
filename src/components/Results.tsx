@@ -113,6 +113,117 @@ export default function Results({ result, onRetake, onHome, onViewHistory }: Res
           </div>
         </div>
 
+        {/* Error Analysis */}
+        {result.referenceText && result.stats.incorrectChars > 0 && (
+          <div className="rounded-2xl p-6 mb-8" style={cardStyle}>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: isDark ? colors.dark.text : colors.light.text }}>
+              🔍 Error Analysis
+            </h3>
+            
+            {/* Character Comparison */}
+            <div className="mb-6">
+              <p className="text-sm mb-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+                Character-by-character comparison (errors highlighted in red):
+              </p>
+              <div 
+                className="p-4 rounded-xl font-mono text-sm leading-relaxed overflow-x-auto"
+                style={{ 
+                  backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary,
+                  maxHeight: '200px',
+                  overflowY: 'auto'
+                }}
+              >
+                {result.referenceText.split('').map((char, index) => {
+                  const typedChar = result.textTyped[index];
+                  const isCorrect = typedChar === char;
+                  const isMissing = index >= result.textTyped.length;
+                  
+                  return (
+                    <span
+                      key={index}
+                      style={{
+                        backgroundColor: isCorrect ? 'transparent' : (isMissing ? `${colors.sky}30` : `${colors.coral}30`),
+                        color: isCorrect ? (isDark ? colors.dark.text : colors.light.text) : colors.coral,
+                        borderBottom: isCorrect ? 'none' : `2px solid ${colors.coral}`,
+                        padding: '0 1px'
+                      }}
+                      title={isCorrect ? undefined : `Expected: "${char === ' ' ? 'space' : char}" | Typed: "${isMissing ? 'missing' : (typedChar === ' ' ? 'space' : typedChar)}"`}
+                    >
+                      {char === ' ' ? '·' : char}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Error List */}
+            <div>
+              <p className="text-sm mb-3" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+                Specific mistakes ({result.stats.incorrectChars} errors):
+              </p>
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {(() => {
+                  const errors: { position: number; expected: string; typed: string }[] = [];
+                  const maxLength = Math.max(result.referenceText.length, result.textTyped.length);
+                  
+                  for (let i = 0; i < maxLength; i++) {
+                    const expected = result.referenceText[i] || '[end]';
+                    const typed = result.textTyped[i] || '[missing]';
+                    
+                    if (expected !== typed) {
+                      errors.push({
+                        position: i + 1,
+                        expected: expected === ' ' ? 'space' : expected,
+                        typed: typed === ' ' ? 'space' : typed
+                      });
+                    }
+                  }
+                  
+                  return errors.slice(0, 20).map((error, idx) => (
+                    <div 
+                      key={idx}
+                      className="flex items-center gap-3 p-2 rounded-lg text-sm"
+                      style={{ backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary }}
+                    >
+                      <span className="font-mono text-xs px-2 py-1 rounded" style={{ backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgSecondary, color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+                        #{error.position}
+                      </span>
+                      <span style={{ color: isDark ? colors.dark.text : colors.light.text }}>
+                        Expected: <span className="font-mono font-bold" style={{ color: colors.lemonadeDark }}>"{error.expected}"</span>
+                      </span>
+                      <span style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>→</span>
+                      <span style={{ color: isDark ? colors.dark.text : colors.light.text }}>
+                        Typed: <span className="font-mono font-bold" style={{ color: colors.coral }}>"{error.typed}"</span>
+                      </span>
+                    </div>
+                  ));
+                })()}
+                {result.stats.incorrectChars > 20 && (
+                  <p className="text-xs text-center py-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+                    ... and {result.stats.incorrectChars - 20} more errors
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Legend */}
+            <div className="mt-4 flex flex-wrap gap-4 text-xs" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+              <div className="flex items-center gap-2">
+                <span className="inline-block w-4 h-4 rounded" style={{ backgroundColor: `${colors.coral}30`, border: `2px solid ${colors.coral}` }}></span>
+                <span>Incorrect character</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline-block w-4 h-4 rounded" style={{ backgroundColor: `${colors.sky}30` }}></span>
+                <span>Missing character</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono">·</span>
+                <span>Space character</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Performance Guide */}
         <div 
           className="rounded-2xl p-6 mb-8"

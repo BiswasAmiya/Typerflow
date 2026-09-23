@@ -8,8 +8,8 @@ interface TypeSmoothIconProps {
 export default function TypeSmoothIcon({ size = 32, className = '' }: TypeSmoothIconProps) {
   const { theme } = useTheme();
   
-  const primaryColor = theme === 'dark' ? '#B8FB3C' : '#03045E';
-  const secondaryColor = theme === 'dark' ? '#03045E' : '#B8FB3C';
+  const primaryColor = theme === 'dark' ? '#FFCF46' : '#3295DB';
+  const secondaryColor = theme === 'dark' ? '#3295DB' : '#FFCF46';
   
   return (
     <svg 
