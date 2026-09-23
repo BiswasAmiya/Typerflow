@@ -32,8 +32,6 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
   const [currentWpm, setCurrentWpm] = useState(0);
   const [currentAccuracy, setCurrentAccuracy] = useState(100);
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
-  const [paperText, setPaperText] = useState('');
-  const [copied, setCopied] = useState(false);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -53,7 +51,6 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
     // Use PDF text if provided, otherwise generate random passages
     const testText = pdfText || getMultiplePassages(duration <= 10 ? 4 : duration <= 15 ? 6 : 8);
     setText(testText);
-    setPaperText(testText);
   }, [duration, pdfText]);
 
   useEffect(() => {
@@ -170,13 +167,6 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
   const progress = text.length > 0 ? (typedText.length / text.length) * 100 : 0;
   const timeProgress = ((duration * 60 - timeLeft) / (duration * 60)) * 100;
 
-  const handleCopyText = () => {
-    navigator.clipboard.writeText(paperText).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
   const cardStyle = {
     backgroundColor: isDark ? colors.dark.card : colors.light.card,
     border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`
@@ -225,208 +215,182 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
         </header>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <div className="rounded-xl p-4 text-center transition-all duration-300" style={cardStyle}>
-            <p className="text-xs mb-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Time Left</p>
-            <p className={`text-2xl font-bold font-mono ${timeLeft <= 60 ? 'animate-pulse' : ''}`} style={{ color: timeLeft <= 60 ? colors.coral : (isDark ? colors.dark.text : colors.light.text) }}>
-              {formatTime(timeLeft)}
-            </p>
+        {mode === 'screen' ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            <div className="rounded-xl p-4 text-center transition-all duration-300" style={cardStyle}>
+              <p className="text-xs mb-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Time Left</p>
+              <p className={`text-2xl font-bold font-mono ${timeLeft <= 60 ? 'animate-pulse' : ''}`} style={{ color: timeLeft <= 60 ? colors.coral : (isDark ? colors.dark.text : colors.light.text) }}>
+                {formatTime(timeLeft)}
+              </p>
+            </div>
+            <div className="rounded-xl p-4 text-center transition-all duration-300" style={cardStyle}>
+              <p className="text-xs mb-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>WPM</p>
+              <p className="text-2xl font-bold" style={{ color: isDark ? colors.lemonade : colors.electric }}>{currentWpm}</p>
+            </div>
+            <div className="rounded-xl p-4 text-center transition-all duration-300" style={cardStyle}>
+              <p className="text-xs mb-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Accuracy</p>
+              <p className="text-2xl font-bold" style={{ color: currentAccuracy >= 95 ? colors.lemonadeDark : currentAccuracy >= 85 ? colors.sky : colors.coral }}>
+                {currentAccuracy}%
+              </p>
+            </div>
+            <div className="rounded-xl p-4 text-center transition-all duration-300" style={cardStyle}>
+              <p className="text-xs mb-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Errors</p>
+              <p className="text-2xl font-bold" style={{ color: colors.coral }}>{incorrectChars}</p>
+            </div>
           </div>
-          <div className="rounded-xl p-4 text-center transition-all duration-300" style={cardStyle}>
-            <p className="text-xs mb-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>WPM</p>
-            <p className="text-2xl font-bold" style={{ color: isDark ? colors.lemonade : colors.electric }}>{currentWpm}</p>
+        ) : (
+          <div className="flex justify-center mb-6">
+            <div className="rounded-xl p-6 text-center transition-all duration-300" style={cardStyle}>
+              <p className="text-xs mb-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Time Left</p>
+              <p className={`text-4xl font-bold font-mono ${timeLeft <= 60 ? 'animate-pulse' : ''}`} style={{ color: timeLeft <= 60 ? colors.coral : (isDark ? colors.dark.text : colors.light.text) }}>
+                {formatTime(timeLeft)}
+              </p>
+            </div>
           </div>
-          <div className="rounded-xl p-4 text-center transition-all duration-300" style={cardStyle}>
-            <p className="text-xs mb-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Accuracy</p>
-            <p className="text-2xl font-bold" style={{ color: currentAccuracy >= 95 ? colors.lemonadeDark : currentAccuracy >= 85 ? colors.sky : colors.coral }}>
-              {currentAccuracy}%
-            </p>
-          </div>
-          <div className="rounded-xl p-4 text-center transition-all duration-300" style={cardStyle}>
-            <p className="text-xs mb-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Errors</p>
-            <p className="text-2xl font-bold" style={{ color: colors.coral }}>{incorrectChars}</p>
-          </div>
-        </div>
+        )}
 
-        {/* Progress Bars */}
-        <div className="space-y-2 mb-6">
-          <div className="flex items-center gap-3">
-            <span className="text-xs w-16" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Time</span>
-            <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary }}>
-              <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${timeProgress}%`, background: `linear-gradient(90deg, ${colors.electricMedium}, ${colors.lemonade})` }} />
+        {/* Progress Bars - Only show in Screen Mode */}
+        {mode === 'screen' && (
+          <div className="space-y-2 mb-6">
+            <div className="flex items-center gap-3">
+              <span className="text-xs w-16" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Time</span>
+              <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary }}>
+                <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${timeProgress}%`, background: `linear-gradient(90deg, ${colors.electricMedium}, ${colors.lemonade})` }} />
+              </div>
+              <span className="text-xs w-12 text-right" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>{Math.round(timeProgress)}%</span>
             </div>
-            <span className="text-xs w-12 text-right" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>{Math.round(timeProgress)}%</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs w-16" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Progress</span>
-            <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary }}>
-              <div className="h-full rounded-full transition-all duration-300" style={{ width: `${Math.min(progress, 100)}%`, background: `linear-gradient(90deg, ${colors.lemonadeDark}, ${colors.lemonade})` }} />
+            <div className="flex items-center gap-3">
+              <span className="text-xs w-16" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Progress</span>
+              <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary }}>
+                <div className="h-full rounded-full transition-all duration-300" style={{ width: `${Math.min(progress, 100)}%`, background: `linear-gradient(90deg, ${colors.lemonadeDark}, ${colors.lemonade})` }} />
+              </div>
+              <span className="text-xs w-12 text-right" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>{Math.round(Math.min(progress, 100))}%</span>
             </div>
-            <span className="text-xs w-12 text-right" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>{Math.round(Math.min(progress, 100))}%</span>
           </div>
-        </div>
+        )}
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Text Display */}
-          <div className="rounded-2xl p-6 transition-all duration-300" style={cardStyle}>
-            {mode === 'screen' ? (
-              <>
-                <h3 className="text-sm font-medium mb-3 flex items-center gap-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
-                  <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: colors.lemonade }}></span>
-                  Text to type
-                </h3>
-                <div className="h-80 overflow-y-auto font-mono text-sm leading-relaxed pr-2">
-                  {text.split('').map((char, index) => {
-                    let color = isDark ? 'rgba(184, 251, 60, 0.4)' : 'rgba(3, 4, 94, 0.4)';
-                    let bg = 'transparent';
-                    if (index < typedText.length) {
-                      if (typedText[index] === char) {
-                        color = colors.lemonadeDark;
-                      } else {
-                        color = colors.coral;
-                        bg = `${colors.coral}20`;
-                      }
-                    } else if (index === typedText.length) {
-                      color = isDark ? colors.dark.text : colors.light.text;
-                      bg = `${colors.lemonade}30`;
+        {mode === 'screen' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Text Display - Screen Mode Only */}
+            <div className="rounded-2xl p-6 transition-all duration-300" style={cardStyle}>
+              <h3 className="text-sm font-medium mb-3 flex items-center gap-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+                <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: colors.lemonade }}></span>
+                Text to type
+              </h3>
+              <div className="h-80 overflow-y-auto font-mono text-sm leading-relaxed pr-2">
+                {text.split('').map((char, index) => {
+                  let color = isDark ? 'rgba(184, 251, 60, 0.4)' : 'rgba(3, 4, 94, 0.4)';
+                  let bg = 'transparent';
+                  if (index < typedText.length) {
+                    if (typedText[index] === char) {
+                      color = colors.lemonadeDark;
+                    } else {
+                      color = colors.coral;
+                      bg = `${colors.coral}20`;
                     }
-                    return (
-                      <span key={index} style={{ color, backgroundColor: bg, borderLeft: index === typedText.length ? `2px solid ${colors.lemonade}` : 'none' }}>
-                        {char === '\n' ? '↵\n' : char}
-                      </span>
-                    );
-                  })}
-                </div>
-              </>
-            ) : (
-              <>
-                <h3 className="text-sm font-medium mb-3 flex items-center gap-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
-                  <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: colors.lavender }}></span>
-                  📄 Paper Mode {pdfText ? '- PDF Reference Text' : '- Reference Text'}
-                </h3>
-                <div className="h-80 flex flex-col items-center justify-center text-center">
-                  <div className="text-6xl mb-4">{pdfText ? '📄' : '📝'}</div>
-                  <p className="text-lg font-medium mb-2" style={{ color: isDark ? colors.dark.text : colors.light.text }}>
-                    {pdfText ? 'Type from your PDF paper' : 'Type from your paper'}
-                  </p>
-                  <p className="text-sm mb-6 max-w-xs" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
-                    {pdfText 
-                      ? 'The text from your PDF is NOT shown on screen during typing. Type from the printed PDF you prepared.'
-                      : 'The text is NOT shown on screen during typing. Type from the printed/written paper you prepared.'
-                    }
-                  </p>
-                  {!pdfText && (
-                    <div 
-                      className="rounded-lg p-4 max-w-sm w-full"
-                      style={{
-                        backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary,
-                        border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`
-                      }}
-                    >
-                      <p className="text-xs mb-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>Need the text? Copy it before starting:</p>
-                      <textarea
-                        readOnly
-                        value={paperText}
-                        className="w-full h-24 text-xs bg-transparent border-none resize-none focus:outline-none"
-                        style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}
-                        onClick={(e) => (e.target as HTMLTextAreaElement).select()}
-                      />
-                      <button
-                        onClick={handleCopyText}
-                        className="mt-2 px-3 py-1.5 text-xs rounded transition-all"
-                        style={{
-                          backgroundColor: copied ? `${colors.lemonadeDark}20` : (isDark ? colors.dark.bgSecondary : colors.light.bgTertiary),
-                          color: copied ? colors.lemonadeDark : (isDark ? colors.dark.text : colors.light.text),
-                          border: `1px solid ${copied ? `${colors.lemonadeDark}30` : (isDark ? colors.dark.border : colors.light.border)}`
-                        }}
-                      >
-                        {copied ? '✓ Copied!' : '📋 Copy to clipboard'}
-                      </button>
-                    </div>
-                  )}
-                  {pdfText && (
-                    <div 
-                      className="rounded-lg p-4 max-w-sm w-full"
-                      style={{
-                        backgroundColor: isDark ? `${colors.lavender}10` : `${colors.lavender}10`,
-                        border: `1px solid ${colors.lavender}30`
-                      }}
-                    >
-                      <p className="text-xs" style={{ color: colors.lavender }}>
-                        ✓ Text loaded from your uploaded PDF
-                      </p>
-                      <p className="text-xs mt-1" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
-                        Print the PDF and type from it during the test
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+                  } else if (index === typedText.length) {
+                    color = isDark ? colors.dark.text : colors.light.text;
+                    bg = `${colors.lemonade}30`;
+                  }
+                  return (
+                    <span key={index} style={{ color, backgroundColor: bg, borderLeft: index === typedText.length ? `2px solid ${colors.lemonade}` : 'none' }}>
+                      {char === '\n' ? '↵\n' : char}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
 
-          {/* Typing Area */}
-          <div className="rounded-2xl p-6 transition-all duration-300" style={cardStyle}>
-            <h3 className="text-sm font-medium mb-3 flex items-center gap-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
-              <span className={`w-2 h-2 rounded-full ${isStarted ? 'animate-pulse' : ''}`} style={{ backgroundColor: isStarted ? colors.lemonade : (isDark ? colors.dark.textMuted : colors.light.textMuted) }}></span>
-              {isFinished ? 'Test Complete!' : isStarted ? 'Typing in progress...' : 'Start typing to begin'}
-            </h3>
-            <textarea
-              ref={textareaRef}
-              value={typedText}
-              onChange={handleTextChange}
-              onKeyDown={handleKeyDown}
-              disabled={isFinished}
-              className="w-full h-80 rounded-xl p-4 font-mono text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-              style={{
-                backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary,
-                border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`,
-                color: isDark ? colors.dark.text : colors.light.text,
-                caretColor: colors.lemonade
-              }}
-              placeholder={isStarted ? '' : 'Start typing to begin the test...'}
-              spellCheck={false}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-            />
-            <div className="mt-3 flex items-center justify-between text-xs" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
-              <span>Characters: {typedText.length} / {text.length}</span>
-              <span>
-                {!isStarted && !isFinished && '⏳ Waiting to start...'}
-                {isStarted && !isFinished && '🟢 Active'}
-                {isFinished && '✅ Complete'}
-              </span>
+            {/* Typing Area */}
+            <div className="rounded-2xl p-6 transition-all duration-300" style={cardStyle}>
+              <h3 className="text-sm font-medium mb-3 flex items-center gap-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+                <span className={`w-2 h-2 rounded-full ${isStarted ? 'animate-pulse' : ''}`} style={{ backgroundColor: isStarted ? colors.lemonade : (isDark ? colors.dark.textMuted : colors.light.textMuted) }}></span>
+                {isFinished ? 'Test Complete!' : isStarted ? 'Typing in progress...' : 'Start typing to begin'}
+              </h3>
+              <textarea
+                ref={textareaRef}
+                value={typedText}
+                onChange={handleTextChange}
+                onKeyDown={handleKeyDown}
+                disabled={isFinished}
+                className="w-full h-80 rounded-xl p-4 font-mono text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                style={{
+                  backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary,
+                  border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`,
+                  color: isDark ? colors.dark.text : colors.light.text,
+                  caretColor: colors.lemonade
+                }}
+                placeholder={isStarted ? '' : 'Start typing to begin the test...'}
+                spellCheck={false}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+              />
+              <div className="mt-3 flex items-center justify-between text-xs" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+                <span>Characters: {typedText.length} / {text.length}</span>
+                <span>
+                  {!isStarted && !isFinished && '⏳ Waiting to start...'}
+                  {isStarted && !isFinished && '🟢 Active'}
+                  {isFinished && '✅ Complete'}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Keyboard Tips */}
-        <div 
-          className="mt-6 rounded-xl p-4 transition-all duration-300"
-          style={{
-            backgroundColor: isDark ? `${colors.dark.bgTertiary}50` : `${colors.light.bgTertiary}50`,
-            border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`
-          }}
-        >
-          <div className="flex flex-wrap items-center gap-4 text-xs" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgTertiary, color: isDark ? colors.dark.text : colors.light.text }}>Tab</kbd>
-              <span>disabled</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgTertiary, color: isDark ? colors.dark.text : colors.light.text }}>Backspace</kbd>
-              <span>to correct mistakes</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgTertiary, color: isDark ? colors.dark.text : colors.light.text }}>Enter</kbd>
-              <span>for new line</span>
-            </span>
-            <span style={{ color: isDark ? colors.dark.border : colors.light.border }}>|</span>
-            <span>💡 Focus on accuracy first, speed will follow</span>
+        ) : (
+          /* Paper Mode - Only Timer and Typing Box */
+          <div className="max-w-4xl mx-auto">
+            <div className="rounded-2xl p-6 transition-all duration-300" style={cardStyle}>
+              <textarea
+                ref={textareaRef}
+                value={typedText}
+                onChange={handleTextChange}
+                onKeyDown={handleKeyDown}
+                disabled={isFinished}
+                className="w-full h-96 rounded-xl p-6 font-mono text-base leading-relaxed resize-none focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                style={{
+                  backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary,
+                  border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`,
+                  color: isDark ? colors.dark.text : colors.light.text,
+                  caretColor: colors.lemonade
+                }}
+                placeholder="Start typing here..."
+                spellCheck={false}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+              />
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Keyboard Tips - Only show in Screen Mode */}
+        {mode === 'screen' && (
+          <div 
+            className="mt-6 rounded-xl p-4 transition-all duration-300"
+            style={{
+              backgroundColor: isDark ? `${colors.dark.bgTertiary}50` : `${colors.light.bgTertiary}50`,
+              border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`
+            }}
+          >
+            <div className="flex flex-wrap items-center gap-4 text-xs" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgTertiary, color: isDark ? colors.dark.text : colors.light.text }}>Tab</kbd>
+                <span>disabled</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgTertiary, color: isDark ? colors.dark.text : colors.light.text }}>Backspace</kbd>
+                <span>to correct mistakes</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgTertiary, color: isDark ? colors.dark.text : colors.light.text }}>Enter</kbd>
+                <span>for new line</span>
+              </span>
+              <span style={{ color: isDark ? colors.dark.border : colors.light.border }}>|</span>
+              <span>💡 Focus on accuracy first, speed will follow</span>
+            </div>
+          </div>
+        )}
 
         {/* Quit Modal */}
         {showQuitConfirm && (
