@@ -344,7 +344,7 @@ export default function TestSetup({ userName, userEmail, onStart, onLogout, onVi
             </li>
             <li className="flex items-start gap-2">
               <span style={{ color: colors.lavender }} className="mt-0.5">•</span>
-              <span><strong>Paper Mode:</strong> Upload a PDF containing your typing test text, or use the default text. Print it on paper before starting. The screen will be blank — type from your paper reference. Results are calculated based on the PDF content.</span>
+              <span><strong>Paper Mode:</strong> Upload a PDF containing your typing test text, or use the default text. Print it on paper before starting. During the test, you'll see only a timer and typing box — no text preview or real-time stats. Your typing will be checked against the PDF content for accurate results.</span>
             </li>
             <li className="flex items-start gap-2">
               <span style={{ color: colors.lemonadeDark }} className="mt-0.5">•</span>

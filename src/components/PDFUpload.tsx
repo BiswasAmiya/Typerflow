@@ -141,7 +141,7 @@ export default function PDFUpload({ onTextExtracted, onError }: PDFUploadProps) 
       {/* Uploaded File Info */}
       {uploadedFile && !isProcessing && (
         <div className="rounded-xl p-4" style={{ backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary, border: `1px solid ${isDark ? colors.dark.border : colors.light.border}` }}>
-          <div className="flex items-start justify-between mb-3">
+          <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className="text-2xl">📄</div>
               <div>
@@ -164,28 +164,10 @@ export default function PDFUpload({ onTextExtracted, onError }: PDFUploadProps) 
               Remove
             </button>
           </div>
-
-          {/* Extracted Text Preview */}
           {extractedText && (
-            <div className="mt-4">
-              <p className="text-xs font-medium mb-2" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
-                Extracted Text Preview:
-              </p>
-              <div 
-                className="rounded-lg p-3 max-h-40 overflow-y-auto text-xs font-mono"
-                style={{ 
-                  backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgSecondary,
-                  color: isDark ? colors.dark.text : colors.light.text,
-                  border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`
-                }}
-              >
-                {extractedText.substring(0, 500)}
-                {extractedText.length > 500 && '...'}
-              </div>
-              <p className="text-xs mt-2" style={{ color: colors.lemonadeDark }}>
-                ✓ {extractedText.length} characters extracted
-              </p>
-            </div>
+            <p className="text-xs mt-3" style={{ color: colors.lemonadeDark }}>
+              ✓ PDF loaded successfully - {extractedText.length} characters extracted
+            </p>
           )}
         </div>
       )}
