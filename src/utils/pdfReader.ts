@@ -1,7 +1,9 @@
 import * as pdfjsLib from 'pdfjs-dist';
+// @ts-ignore - Import worker as URL for Vite
+import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// Configure PDF.js worker using the bundled worker file
+pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
 
 export interface PDFExtractionResult {
   text: string;
@@ -19,8 +21,10 @@ export async function extractTextFromPDF(file: File): Promise<PDFExtractionResul
     // Read file as ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
     
-    // Load PDF document
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    // Load PDF document with bundled worker
+    const pdf = await pdfjsLib.getDocument({ 
+      data: arrayBuffer
+    }).promise;
     const pageCount = pdf.numPages;
     
     let fullText = '';
