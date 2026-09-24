@@ -29,17 +29,52 @@ export async function extractTextFromPDF(file: File): Promise<PDFExtractionResul
     
     let fullText = '';
     
-    // Extract text from each page
+    // Extract text from each page with improved line detection
     for (let pageNum = 1; pageNum <= pageCount; pageNum++) {
       const page = await pdf.getPage(pageNum);
       const textContent = await page.getTextContent();
       
-      // Extract text items and join them
-      const pageText = textContent.items
-        .map((item: any) => item.str)
-        .join(' ');
+      // Group text items by Y position to detect lines
+      const lines: Map<number, Array<{str: string, x: number}>> = new Map();
       
-      fullText += pageText + '\n\n';
+      textContent.items.forEach((item: any) => {
+        if (!item.str || item.str.trim() === '') return;
+        
+        const y = Math.round(item.transform[5]); // Y coordinate
+        const x = item.transform[4]; // X coordinate
+        
+        if (!lines.has(y)) {
+          lines.set(y, []);
+        }
+        lines.get(y)!.push({ str: item.str, x });
+      });
+      
+      // Sort lines by Y position (top to bottom)
+      const sortedYPositions = Array.from(lines.keys()).sort((a, b) => b - a);
+      
+      const pageLines: string[] = [];
+      sortedYPositions.forEach(y => {
+        const lineItems = lines.get(y)!;
+        // Sort items by X position (left to right)
+        lineItems.sort((a, b) => a.x - b.x);
+        
+        // Join text items with appropriate spacing
+        let lineText = '';
+        let lastX = 0;
+        
+        lineItems.forEach((item, idx) => {
+          // Add space if there's a gap between items
+          if (idx > 0 && item.x - lastX > 10) {
+            lineText += ' ';
+          }
+          lineText += item.str;
+          lastX = item.x + item.str.length * 5;
+        });
+        
+        pageLines.push(lineText);
+      });
+      
+      fullText += pageLines.join('\n') + '\n\n';
     }
     
     // Clean up the text
