@@ -76,13 +76,17 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
     setIsFinished(true);
     if (timerRef.current) clearInterval(timerRef.current);
 
-    const elapsed = durationRef.current * 60 - (timeLeft > 0 ? timeLeft : 0);
+    // Calculate actual elapsed time from when typing started
+    const actualElapsed = startTimeRef.current 
+      ? Math.round((Date.now() - startTimeRef.current) / 1000)
+      : durationRef.current * 60;
+    
     const actualCorrect = correctCharsRef.current;
     const actualTotal = typedTextRef.current.length;
     
-    const wpm = calculateWPM(actualCorrect, elapsed || 1);
+    const wpm = calculateWPM(actualCorrect, actualElapsed || 1);
     const accuracy = calculateAccuracy(actualCorrect, actualTotal);
-    const rawWpm = calculateRawWPM(actualTotal, elapsed || 1);
+    const rawWpm = calculateRawWPM(actualTotal, actualElapsed || 1);
 
     if (isRateLimited()) {
       alert('Too many tests completed in a short time. Please wait a moment.');
@@ -102,7 +106,7 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
         correctChars: actualCorrect,
         incorrectChars: incorrectCharsRef.current,
         totalChars: actualTotal,
-        timeElapsed: elapsed || durationRef.current * 60,
+        timeElapsed: actualElapsed || durationRef.current * 60,
         rawWpm, consistency: 0
       },
       date: new Date().toISOString(),
@@ -113,7 +117,7 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
     recordSubmission();
     saveResult(result);
     onComplete(result);
-  }, [timeLeft, userName, userEmail, mode, onComplete, onQuit]);
+  }, [userName, userEmail, mode, onComplete, onQuit]);
 
   useEffect(() => {
     if (!isStarted || isFinished) return;
@@ -154,7 +158,24 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Tab') e.preventDefault();
+    // Tab key inserts a newline instead of moving focus
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const textarea = e.target as HTMLTextAreaElement;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const value = textarea.value;
+      
+      // Insert newline at cursor position
+      const newValue = value.substring(0, start) + '\n' + value.substring(end);
+      textarea.value = newValue;
+      textarea.selectionStart = textarea.selectionEnd = start + 1;
+      
+      // Trigger change event
+      const event = new Event('input', { bubbles: true });
+      textarea.dispatchEvent(event);
+    }
+    // Prevent Enter from creating double newlines (optional - let it work normally)
   };
 
   useEffect(() => { if (textareaRef.current) textareaRef.current.focus(); }, []);
@@ -317,12 +338,11 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
                 onChange={handleTextChange}
                 onKeyDown={handleKeyDown}
                 disabled={isFinished}
-                className="w-full h-80 rounded-xl p-4 font-mono text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                className="typing-area w-full h-80 rounded-xl p-4 font-mono text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                 style={{
                   backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary,
                   border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`,
-                  color: isDark ? colors.dark.text : colors.light.text,
-                  caretColor: colors.lemonade
+                  color: isDark ? colors.dark.text : colors.light.text
                 }}
                 placeholder={isStarted ? '' : 'Start typing to begin the test...'}
                 spellCheck={false}
@@ -350,12 +370,11 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
                 onChange={handleTextChange}
                 onKeyDown={handleKeyDown}
                 disabled={isFinished}
-                className="w-full h-96 rounded-xl p-6 font-mono text-base leading-relaxed resize-none focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                className="typing-area w-full h-96 rounded-xl p-6 font-mono text-base leading-relaxed resize-none focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                 style={{
                   backgroundColor: isDark ? colors.dark.bgTertiary : colors.light.bgTertiary,
                   border: `1px solid ${isDark ? colors.dark.border : colors.light.border}`,
-                  color: isDark ? colors.dark.text : colors.light.text,
-                  caretColor: colors.lemonade
+                  color: isDark ? colors.dark.text : colors.light.text
                 }}
                 placeholder="Start typing here..."
                 spellCheck={false}
@@ -379,15 +398,15 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
             <div className="flex flex-wrap items-center gap-4 text-xs" style={{ color: isDark ? colors.dark.textMuted : colors.light.textMuted }}>
               <span className="flex items-center gap-1">
                 <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgTertiary, color: isDark ? colors.dark.text : colors.light.text }}>Tab</kbd>
-                <span>disabled</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgTertiary, color: isDark ? colors.dark.text : colors.light.text }}>Backspace</kbd>
-                <span>to correct mistakes</span>
+                <span>for new line</span>
               </span>
               <span className="flex items-center gap-1">
                 <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgTertiary, color: isDark ? colors.dark.text : colors.light.text }}>Enter</kbd>
                 <span>for new line</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: isDark ? colors.dark.bgSecondary : colors.light.bgTertiary, color: isDark ? colors.dark.text : colors.light.text }}>Backspace</kbd>
+                <span>to correct mistakes</span>
               </span>
               <span style={{ color: isDark ? colors.dark.border : colors.light.border }}>|</span>
               <span>💡 Focus on accuracy first, speed will follow</span>

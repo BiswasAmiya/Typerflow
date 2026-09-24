@@ -101,10 +101,30 @@
   /* Typing area specific styles */
   .typing-area {
     caret-color: #B8FB3C;
+    caret-shape: block;
   }
 
   html.light .typing-area {
     caret-color: #03045E;
+  }
+
+  /* Make textarea cursor more visible with custom animation */
+  textarea.typing-area:focus {
+    animation: cursor-blink 1s step-end infinite;
+  }
+
+  @keyframes cursor-blink {
+    0%, 100% { caret-color: #B8FB3C; }
+    50% { caret-color: transparent; }
+  }
+
+  html.light textarea.typing-area:focus {
+    animation: cursor-blink-light 1s step-end infinite;
+  }
+
+  @keyframes cursor-blink-light {
+    0%, 100% { caret-color: #03045E; }
+    50% { caret-color: transparent; }
   }
 
   .typing-area::selection {
