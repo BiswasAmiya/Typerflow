@@ -1,4 +1,4 @@
-// TypeSmooth Color Palette - Based on typing.com design
+// TypeSmooth Color Palette - Exact colors from typing.com design
 // Clean, friendly, educational design
 
 export const colors = {
@@ -6,20 +6,28 @@ export const colors = {
   electric: '#03045E',        // Kept for theme toggle compatibility
   lemonade: '#B8FB3C',        // Kept for theme toggle compatibility
   
-  // New typing.com-inspired colors
+  // typing.com exact colors
   primary: {
     yellow: '#FFCF46',        // rgb(255, 207, 70) - Primary brand color
     blue: '#3295DB',          // rgb(50, 149, 219) - Secondary brand color
     lightBlue: '#6FB2E6',     // rgb(111, 178, 230) - Accent blue
   },
   
-  // Text colors
+  // Text colors - exact from typing.com
   text: {
+    default: '#6C6F73',       // rgb(108, 111, 115) - Main text color from CSS
     dark: '#4A4A4A',          // rgb(74, 74, 74) - Primary text
     brown: '#6D5825',         // rgb(109, 88, 37) - Button text on yellow
     white: '#FFFFFF',         // rgb(255, 255, 255)
     blue: '#2877AF',          // rgb(40, 119, 175) - Links/accents
     light: '#A9A9A9',         // rgb(169, 169, 169) - Muted text
+  },
+  
+  // Header colors - exact from typing.com
+  header: {
+    background: '#084F8E',    // rgb(8, 79, 142)
+    gradientStart: '#084F8E', // rgb(8, 79, 142)
+    gradientEnd: '#083466',   // rgb(8, 52, 102)
   },
   
   // Surface colors
