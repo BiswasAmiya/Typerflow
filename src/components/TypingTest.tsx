@@ -49,10 +49,12 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
   useEffect(() => { textRef.current = text; }, [text]);
   useEffect(() => { isFinishedRef.current = isFinished; }, [isFinished]);
 
+  // Generate text on mount and when dependencies change
   useEffect(() => {
     // Use PDF text if provided, otherwise generate random passages
     const testText = pdfText || getMultiplePassages(duration <= 10 ? 4 : duration <= 15 ? 6 : 8);
     setText(testText);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration, pdfText]);
 
   useEffect(() => {
