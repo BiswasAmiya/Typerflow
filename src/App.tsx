@@ -18,6 +18,7 @@ interface AppState {
   testDuration: number;
   pdfText: string;
   lastResult: TestResult | null;
+  testSessionId: number; // Forces component remount on retake
 }
 
 function AppContent() {
@@ -28,6 +29,7 @@ function AppContent() {
     testDuration: 10,
     pdfText: '',
     lastResult: null,
+    testSessionId: 0,
   });
 
   // Check for existing user session
@@ -46,7 +48,7 @@ function AppContent() {
   };
 
   const handleStartTest = (mode: 'screen' | 'paper', duration: number, pdfText?: string) => {
-    setState(prev => ({ ...prev, testMode: mode, testDuration: duration, pdfText: pdfText || '', screen: 'test' }));
+    setState(prev => ({ ...prev, testMode: mode, testDuration: duration, pdfText: pdfText || '', screen: 'test', testSessionId: prev.testSessionId + 1 }));
   };
 
   const handleTestComplete = (result: TestResult) => {
@@ -54,7 +56,7 @@ function AppContent() {
   };
 
   const handleRetake = () => {
-    setState(prev => ({ ...prev, screen: 'test' }));
+    setState(prev => ({ ...prev, screen: 'test', testSessionId: prev.testSessionId + 1 }));
   };
 
   const handleGoHome = () => {
@@ -74,6 +76,7 @@ function AppContent() {
       testDuration: 10,
       pdfText: '',
       lastResult: null,
+      testSessionId: 0,
     });
   };
 
@@ -100,6 +103,7 @@ function AppContent() {
     case 'test':
       return state.user ? (
         <TypingTest
+          key={state.testSessionId}
           userName={state.user.name}
           userEmail={state.user.email}
           mode={state.testMode}
