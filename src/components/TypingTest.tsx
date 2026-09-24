@@ -39,12 +39,14 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
   const correctCharsRef = useRef(0);
   const incorrectCharsRef = useRef(0);
   const typedTextRef = useRef('');
+  const textRef = useRef('');
   const isFinishedRef = useRef(false);
   const durationRef = useRef(duration);
 
   useEffect(() => { correctCharsRef.current = correctChars; }, [correctChars]);
   useEffect(() => { incorrectCharsRef.current = incorrectChars; }, [incorrectChars]);
   useEffect(() => { typedTextRef.current = typedText; }, [typedText]);
+  useEffect(() => { textRef.current = text; }, [text]);
   useEffect(() => { isFinishedRef.current = isFinished; }, [isFinished]);
 
   useEffect(() => {
@@ -105,7 +107,7 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
       },
       date: new Date().toISOString(),
       textTyped: typedTextRef.current,
-      referenceText: text
+      referenceText: textRef.current
     };
 
     recordSubmission();
