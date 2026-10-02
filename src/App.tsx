@@ -5,11 +5,13 @@ import TestSetup from './components/TestSetup';
 import TypingTest from './components/TypingTest';
 import Results from './components/Results';
 import History from './components/History';
+import ExamSelection from './components/ExamSelection';
 import { TestResult } from './utils/calculations';
 import { saveUser, getUser, clearUser, UserData } from './utils/storage';
 import { generateSessionToken } from './utils/validation';
+import { Exam } from './data/exams';
 
-type Screen = 'welcome' | 'setup' | 'test' | 'results' | 'history';
+type Screen = 'welcome' | 'setup' | 'test' | 'results' | 'history' | 'examSelection';
 
 interface AppState {
   screen: Screen;
@@ -19,6 +21,8 @@ interface AppState {
   pdfText: string;
   lastResult: TestResult | null;
   testSessionId: number; // Forces component remount on retake
+  selectedExam: Exam | null;
+  selectedLanguage: 'english' | 'hindi';
 }
 
 function AppContent() {
@@ -30,6 +34,8 @@ function AppContent() {
     pdfText: '',
     lastResult: null,
     testSessionId: 0,
+    selectedExam: null,
+    selectedLanguage: 'english',
   });
 
   // Check for existing user session
@@ -77,11 +83,33 @@ function AppContent() {
       pdfText: '',
       lastResult: null,
       testSessionId: 0,
+      selectedExam: null,
+      selectedLanguage: 'english',
     });
   };
 
   const handleQuitTest = () => {
     setState(prev => ({ ...prev, screen: 'setup' }));
+  };
+
+  const handleGoToExamSelection = () => {
+    setState(prev => ({ ...prev, screen: 'examSelection' }));
+  };
+
+  const handleSelectExam = (exam: Exam, language: 'english' | 'hindi') => {
+    const requirements = language === 'hindi' && exam.requirements.hindi 
+      ? exam.requirements.hindi 
+      : exam.requirements.english;
+    
+    setState(prev => ({
+      ...prev,
+      screen: 'test',
+      selectedExam: exam,
+      selectedLanguage: language,
+      testMode: 'screen',
+      testDuration: requirements.duration,
+      testSessionId: prev.testSessionId + 1,
+    }));
   };
 
   // Render current screen
@@ -97,8 +125,17 @@ function AppContent() {
           onStart={handleStartTest}
           onLogout={handleLogout}
           onViewHistory={handleViewHistory}
+          onGoToExamSelection={handleGoToExamSelection}
         />
       ) : null;
+    
+    case 'examSelection':
+      return (
+        <ExamSelection
+          onSelectExam={handleSelectExam}
+          onBack={handleGoHome}
+        />
+      );
     
     case 'test':
       return state.user ? (
@@ -109,6 +146,8 @@ function AppContent() {
           mode={state.testMode}
           duration={state.testDuration}
           pdfText={state.pdfText}
+          exam={state.selectedExam}
+          language={state.selectedLanguage}
           onComplete={handleTestComplete}
           onQuit={handleQuitTest}
         />

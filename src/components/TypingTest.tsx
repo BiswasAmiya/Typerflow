@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { getMultiplePassages } from '../utils/textPassages';
+import { getMultiplePassagesForExam } from '../data/exams';
 import { calculateWPM, calculateAccuracy, calculateRawWPM, formatTime, generateId, TestResult } from '../utils/calculations';
 import { sanitizeTypingInput, isRateLimited, recordSubmission } from '../utils/validation';
 import { saveResult } from '../utils/storage';
@@ -7,6 +8,7 @@ import { useTheme } from '../context/ThemeContext';
 import { colors } from '../utils/colors';
 import TypeSmoothIcon from './TypeSmoothIcon';
 import ThemeToggle from './ThemeToggle';
+import { Exam } from '../data/exams';
 
 interface TypingTestProps {
   userName: string;
@@ -14,11 +16,13 @@ interface TypingTestProps {
   mode: 'screen' | 'paper';
   duration: number;
   pdfText?: string;
+  exam?: Exam | null;
+  language?: 'english' | 'hindi';
   onComplete: (result: TestResult) => void;
   onQuit: () => void;
 }
 
-export default function TypingTest({ userName, userEmail, mode, duration, pdfText, onComplete, onQuit }: TypingTestProps) {
+export default function TypingTest({ userName, userEmail, mode, duration, pdfText, exam, language = 'english', onComplete, onQuit }: TypingTestProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   
@@ -51,11 +55,22 @@ export default function TypingTest({ userName, userEmail, mode, duration, pdfTex
 
   // Generate text on mount and when dependencies change
   useEffect(() => {
-    // Use PDF text if provided, otherwise generate random passages
-    const testText = pdfText || getMultiplePassages(duration <= 10 ? 4 : duration <= 15 ? 6 : 8);
+    let testText = '';
+    
+    if (pdfText) {
+      // Use PDF text if provided
+      testText = pdfText;
+    } else if (exam) {
+      // Use exam-specific passages
+      testText = getMultiplePassagesForExam(exam.id, duration <= 10 ? 4 : duration <= 15 ? 6 : 8, language);
+    } else {
+      // Use general passages
+      testText = getMultiplePassages(duration <= 10 ? 4 : duration <= 15 ? 6 : 8);
+    }
+    
     setText(testText);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [duration, pdfText]);
+  }, [duration, pdfText, exam, language]);
 
   useEffect(() => {
     if (isStarted && !isFinished && timeLeft > 0) {

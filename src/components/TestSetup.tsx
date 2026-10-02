@@ -12,9 +12,10 @@ interface TestSetupProps {
   onStart: (mode: 'screen' | 'paper', duration: number, pdfText?: string) => void;
   onLogout: () => void;
   onViewHistory: () => void;
+  onGoToExamSelection: () => void;
 }
 
-export default function TestSetup({ userName, userEmail, onStart, onLogout, onViewHistory }: TestSetupProps) {
+export default function TestSetup({ userName, userEmail, onStart, onLogout, onViewHistory, onGoToExamSelection }: TestSetupProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   
@@ -84,6 +85,28 @@ export default function TestSetup({ userName, userEmail, onStart, onLogout, onVi
           >
             Choose your test settings and start typing
           </p>
+        </div>
+
+        {/* Exam Practice Card */}
+        <div 
+          className="rounded-2xl p-6 mb-8 transition-all duration-300 cursor-pointer hover:scale-105"
+          style={{
+            background: `linear-gradient(135deg, ${colors.primary.blue}, ${colors.primary.lightBlue})`,
+            boxShadow: '0 8px 24px rgba(50, 149, 219, 0.3)'
+          }}
+          onClick={onGoToExamSelection}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-bold mb-2" style={{ color: colors.text.white }}>
+                🎯 Competitive Exam Practice
+              </h3>
+              <p className="text-sm" style={{ color: colors.text.white }}>
+                Practice for SSC, RRB, DSSSB, AIIMS, Delhi Police, CSIR & more
+              </p>
+            </div>
+            <div className="text-4xl">→</div>
+          </div>
         </div>
 
         {/* Stats Cards */}
